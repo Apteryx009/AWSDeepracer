@@ -1,0 +1,60 @@
+model one
+
+Hyperparamters: 
+{
+    "batch_size": 64,
+    "beta_entropy": 0.01,
+    "discount_factor": 0.995,
+    "e_greedy_value": 0.05,
+    "epsilon_steps": 10000,
+    "exploration_type": "categorical",
+    "loss_type": "huber",
+    "lr": 0.0003,
+    "num_episodes_between_training": 20,
+    "num_epochs": 10,
+    "stack_size": 1,
+    "term_cond_avg_score": 350.0,
+    "term_cond_max_episodes": 1000,
+    "sac_alpha": 0.2
+  }
+ 
+ 
+Action Space:
+"action_space": [
+        { "steering_angle": -45, "speed": 0.50},
+  { "steering_angle": -40, "speed": 1.00},
+  { "steering_angle": -20, "speed": 1.00},
+  { "steering_angle": -10, "speed": 1.00},
+  { "steering_angle": 0,   "speed": 2.0},
+  { "steering_angle": 0,   "speed": 1.00},
+  { "steering_angle": 10,  "speed": 1.0},
+  { "steering_angle": 20,  "speed": 1.0},
+  { "steering_angle": 40,  "speed": 1.0}],
+    "sensor": ["FRONT_FACING_CAMERA"],
+    "neural_network": "DEEP_CONVOLUTIONAL_NETWORK_SHALLOW",
+    "training_algorithm": "clipped_ppo", 
+    "action_space_type": "discrete",
+    "version": "4"
+}
+
+def reward_function(params):
+    '''
+    Example of rewarding the agent to stay inside the two borders of the track
+    '''
+
+    # Read input parameters
+    all_wheels_on_track = params['all_wheels_on_track']
+    distance_from_center = params['distance_from_center']
+    track_width = params['track_width']
+
+    # Give a very low reward by default
+    reward = 1e-3
+
+    # Give a high reward if no wheels go off the track and
+    # the car is somewhere in between the track borders
+    if all_wheels_on_track and (0.5*track_width - distance_from_center) >= 0.05:
+        reward = 1.0
+
+    # Always return a float value
+    return reward
+
